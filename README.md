@@ -4,12 +4,8 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/ltool.svg)](https://pypi.org/project/ltool/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/ltool.svg)](https://pypi.org/project/ltool/)
 [![License](https://img.shields.io/pypi/l/ltool.svg)](https://pypi.org/project/ltool/)
-<!-- Optional (GitLab-specific). Replace placeholders, then uncomment:
-[![pipeline status](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/badges/main/pipeline.svg)](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/-/pipelines)
-[![coverage report](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/badges/main/coverage.svg)](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/-/graphs/main/charts)
-<!-- GitHub (public) -->
-[![Docs](https://github.com/nikolaos.siomos/ltool/actions/workflows/docs.yml/badge.svg)](https://github.com/nikolaos.siomos/ltool/actions/workflows/docs.yml)
--->
+
+**Documentation:** https://nikolaos-siomos.github.io/ltool/
 
 **ltool** is a layer detection tool based on the **Wavelet Covariance Transform (WCT)** for lidar profile analysis.
 
