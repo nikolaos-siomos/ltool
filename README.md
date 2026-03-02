@@ -7,6 +7,8 @@
 <!-- Optional (GitLab-specific). Replace placeholders, then uncomment:
 [![pipeline status](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/badges/main/pipeline.svg)](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/-/pipelines)
 [![coverage report](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/badges/main/coverage.svg)](https://gitlab.example.org/YOUR_NAMESPACE/YOUR_PROJECT/-/graphs/main/charts)
+<!-- GitHub (public) -->
+[![Docs](https://github.com/nikolaos.siomos/ltool/actions/workflows/docs.yml/badge.svg)](https://github.com/nikolaos.siomos/ltool/actions/workflows/docs.yml)
 -->
 
 **ltool** is a layer detection tool based on the **Wavelet Covariance Transform (WCT)** for lidar profile analysis.
@@ -33,16 +35,6 @@ For development:
 ```bash
 pip install -e .
 ```
-
----
-
-## Scientific note (WCT sign convention)
-
-ltool uses a derivative-like WCT implementation with a **forward-difference** convention:
-
-> **WCT sign convention:** computed as `final − initial`.  
-> Compared to the alternative `initial − final` definition, this results in a **global sign reversal** of the WCT field.  
-> All boundary detection logic in ltool is consistent with this convention.
 
 ---
 
@@ -104,7 +96,7 @@ The `--method` option controls how bases/tops are selected. Choices:
 - `optimized_snr`
 - `optimized_prm` (**default**)
 
-See `docs/methods.md` for the full explanation.
+See `docs/methods/pairing.md` for the full explanation.
 
 ---
 
@@ -121,15 +113,6 @@ Build static site:
 ```bash
 mkdocs build
 ```
-
-### Publish docs on GitLab (GitLab Pages)
-
-This repo includes a ready-to-use **GitLab Pages** pipeline in `.gitlab-ci.yml`.
-
-After pushing to GitLab:
-1. Ensure your default branch is `main` (or update the CI rule accordingly).
-2. In GitLab, enable **Pages** if your instance requires it (Project → Settings → Pages).
-3. The pipeline will build MkDocs and publish the site automatically.
 
 ---
 
@@ -173,14 +156,8 @@ Add your license information here (e.g., `LICENSE` file and short statement).
 
 ---
 
-## Citation
-
-If this project is used in academic work, please cite your related publication/software reference (add details here).
-
----
-
 ## Contact
 
-Maintainer: Your Name  
-Your Institute  
-Email: your.email@institute.org
+Maintainer: Nikolaos Siomos  
+LMU  
+Email: nikolaos.siomos@lmu.de
