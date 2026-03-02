@@ -1,9 +1,10 @@
 # ltool
 
-[![PyPI](https://img.shields.io/pypi/v/ltool.svg)](https://pypi.org/project/ltool/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/ltool.svg)](https://pypi.org/project/ltool/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/ltool.svg)](https://pypi.org/project/ltool/)
-[![License](https://img.shields.io/pypi/l/ltool.svg)](https://pypi.org/project/ltool/)
+[![PyPI](https://img.shields.io/pypi/v/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue?cacheSeconds=300)](https://nikolaos-siomos.github.io/ltool/)
+[![License](https://img.shields.io/pypi/l/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
 
 **Documentation:** https://nikolaos-siomos.github.io/ltool/
 
