@@ -1,0 +1,30 @@
+site_name: ltool
+site_description: Layer detection tool based on Wavelet Covariance Transform
+site_author: Nikolaos Siomos
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.tabs.link
+
+nav:
+  - Home: index.md
+  - API:
+      - get_layers: api/get_layers.md
+  - CLI:
+      - Standalone: cli/standalone.md
+      - SCC: cli/scc.md
+  - Examples:
+      - Run from Python: examples/run_ltool.md
+  
+  - Methods:
+      - Layer pairing methods: methods/pairing.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true

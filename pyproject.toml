@@ -1,0 +1,61 @@
+[project]
+name = "ltool"
+version = "2.0.0"
+
+authors = [
+    {name = "Nikolaos Siomos", email = "nikolaos.siomos@lmu.de"}
+]
+
+license = { file = "LICENSE" }
+
+readme = "README.md"
+requires-python = ">=3.8,<3.13"
+
+dependencies = [
+  "numpy<1.25; python_version<'3.9'",
+  "numpy>=2; python_version>='3.9'",
+  
+  "xarray<2023.2.0; python_version<'3.9'",
+  "xarray>=2023.6.0; python_version>='3.9'",
+
+  "scipy<1.11; python_version<'3.9'",
+  "scipy>=1.13.0; python_version>='3.9'",
+
+  "matplotlib<3.8; python_version<'3.9'",
+  "matplotlib>=3.8.0; python_version>='3.9'",
+]
+
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.8",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.5,<2.0",
+    "mkdocs-material>=9,<10"
+]
+
+[project.urls]
+Homepage = "https://github.com/nikolaos-siomos/ltool"
+Issues = "https://github.com/nikolaos-siomos/ltool/issues"
+
+# ----------------------------------------------------------
+#  CLI commands provided by your package
+# ----------------------------------------------------------
+[project.scripts]
+ltool_standalone = "ltool.__ltool_standalone__:main"
+ltool_scc = "ltool.__ltool_scc__:main"
+# ----------------------------------------------------------
+#  Setuptools configuration (src/ layout)
+# ----------------------------------------------------------
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ltool*"]
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
