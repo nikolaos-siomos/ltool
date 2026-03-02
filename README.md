@@ -152,7 +152,7 @@ python -m twine upload dist/*
 
 ## License
 
-Add your license information here (e.g., `LICENSE` file and short statement).
+This project is licensed under the terms of the [ GNU AFFERO GENERAL PUBLIC LICENSE](LICENSE).
 
 ---
 
