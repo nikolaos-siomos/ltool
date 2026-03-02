@@ -1,0 +1,41 @@
+# GitLab CI for building and publishing MkDocs to GitLab Pages.
+#
+# Requirements:
+# - mkdocs.yml at repo root
+# - docs/ folder with Markdown pages
+# - (recommended) add docs dependencies to pyproject.toml extras, e.g.:
+#     [project.optional-dependencies]
+#     docs = ["mkdocs>=1.6,<2.0", "mkdocs-material>=9.7,<10"]
+#
+# Notes:
+# - GitLab Pages expects output in a folder named "public".
+# - This pipeline publishes Pages on pushes to the default branch (main).
+
+image: python:3.11-slim
+
+stages:
+  - pages
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_NO_CACHE_DIR: "0"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+pages:
+  stage: pages
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - python -V
+    - pip install --upgrade pip
+    # If you have a docs extra: pip install -e '.[docs]'
+    - pip install "mkdocs>=1.6,<2.0" "mkdocs-material>=9.7,<10"
+    - mkdocs build --clean --site-dir public
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
