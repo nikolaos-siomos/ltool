@@ -76,7 +76,7 @@ If the folder contains multiple files, the can be filtered with the following op
 
 ### Output controls
 
-- `--enable_output_timestamp``  
+- `--enable_output_timestamp`  
   If enabled, the output files will be saved in a subfolder inside the provided output folder named as <timestamp>, 
   where timestamp is the folder creation time "in yyyymmhh_hhmmss format
   
