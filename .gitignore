@@ -37,3 +37,6 @@ site/
 Thumbs.db
 .vscode/
 .idea/
+
+# Generated plots
+examples/**/*.png

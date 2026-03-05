@@ -6,8 +6,12 @@ Created on Tue Apr 28 21:31:10 2020
 @author: nick
 """
 import os
-from matplotlib import pyplot as plt
 import numpy as np 
+
+import matplotlib
+matplotlib.use("Agg")
+
+from matplotlib import pyplot as plt
 
 def plot_layers(dir_out, fname, ms_id, layers, height, 
                 sig, sig_err, wct, wct_err, wct_mc,

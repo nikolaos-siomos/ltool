@@ -28,14 +28,14 @@ def absolute_existing_file_or_dir(p: str) -> str:
     """
     path = Path(p)
 
+    if not path.is_absolute():
+        raise Exception(f"Path must be absolute: {p}")
+
     if not path.exists():
         raise Exception(f"Path does not exist: {p}")
 
     if not (path.is_file() or path.is_dir()):
         raise Exception(f"Path must be a file or directory: {p}")
-
-    if not path.is_absolute():
-        raise Exception(f"Path must be absolute: {p}")
 
     return str(path)
 
@@ -52,6 +52,7 @@ def get_base_dir(input_path: PathLike) -> Path:
 def resolve_export_dir(
     input_path: PathLike,
     export_arg: Optional[str],
+    enable_output_timestamp: bool,
 ) -> Path:
     """
     Resolve an export directory.
@@ -66,10 +67,14 @@ def resolve_export_dir(
     """
     base_dir = get_base_dir(input_path)
 
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    default_leaf = f'output_{ts}'
+    if enable_output_timestamp:
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        default_leaf = f'{ts}'
+    else:
+        default_leaf = ''
+        
     if export_arg is None:
-        export_path = base_dir / '..' /default_leaf
+        export_path = base_dir / '..' / 'output' / default_leaf
 
     else:
         probably_dir = could_be_dir(export_arg)
@@ -83,7 +88,8 @@ def resolve_export_dir(
         if export_path.is_absolute():
             export_path = export_path / default_leaf
         else:
-            export_path = base_dir / export_path / default_leaf
+            cwd = Path.cwd()
+            export_path = cwd / export_path / default_leaf
         
     return export_path.resolve()
 
@@ -134,19 +140,31 @@ def collect_ltool_settings(argv=None):
     parser.add_argument('--dpi', type=int, default=100, help="Plot resultion (dpi)")
 
     parser.add_argument(
+        '--enable_output_timestamp', action='store_true', default=False, 
+        help=("If enabled, the output files will be saved in a subfolder "
+              "inside the provided output folder named as <timestamp>, "
+              "where timestamp is the folder creation time "
+              "in yyyymmhh_hhmmss format"
+              )
+        )
+
+    parser.add_argument(
         '--output_folder',
         type=str,
         default=None,
         help=(
             "Directory where the netcdf and plot folders will be saved.\n"
             "Resolution rules:\n"
-            "  • If omitted: defaults to <base_dir>/../output_<timestamp>\n"
-            "  • If relative: resolved relative to <base_dir>/output_<timestamp>\n"
-            "  • If absolute: <base_dir>/output_<timestamp>\n"
+            "  • If omitted: defaults to <base_dir>/..\n"
+            "  • If relative: resolved relative to <current_working_directory>\n"
+            "  • If absolute: <output_folder>\n"
             "\n"
             "base_dir is defined as:\n"
             "  • input_path, if input_path is a directory\n"
             "  • parent directory of input_path, if input_path is a file"
+            "If enable_output_timestamp is enabled, a subfolder named "
+            "ltool_<timestamp> will be created each time ltool is called."
+            "The output files will be placed inside"
         )
     )
     
@@ -207,7 +225,9 @@ def check_args(args, parser):
     # input_path is validated by argparse type=absolute_existing_file_or_dir
     # but you can keep this if you want a clearer error location:
     p = Path(args.input_path)
-    if not p.is_absolute() or not p.exists() or not (p.is_file() or p.is_dir()):
+    
+    # if not p.is_absolute() or not p.exists() or not (p.is_file() or p.is_dir()):
+    if not p.exists() or not (p.is_file() or p.is_dir()):
         parser.error(f"Invalid input_path: {p}")
 
 
@@ -219,6 +239,7 @@ def modify_args(args):
     args.output_folder = resolve_export_dir(
         args.input_path,
         args.output_folder,
+        args.enable_output_timestamp,
     )
 
 

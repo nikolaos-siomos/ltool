@@ -9,6 +9,7 @@ import numpy as np
 from scipy.signal import find_peaks
 import xarray as xr
 import warnings
+from .._compat import trapezoid
 
 warnings.filterwarnings("ignore")
     
@@ -43,14 +44,14 @@ def get_geometrical_properties(rl_flag, bases, tops, height, sig):
             bases[i] = np.round(bases[i], decimals = 5) 
             tops[i] = np.round(tops[i], decimals = 5) 
 
-            com[i] = np.round(np.trapz(sig_l*height_l, x = height_l)/
-                              np.trapz(sig_l, x = height_l), decimals = 5)
+            com[i] = np.round(trapezoid(sig_l*height_l, x = height_l)/
+                              trapezoid(sig_l, x = height_l), decimals = 5)
             
-            dpth[i] = np.round(np.trapz(sig_l, x = height_l)/
+            dpth[i] = np.round(trapezoid(sig_l, x = height_l)/
                                (tck[i]), decimals = 9)         
             
-            wgh[i] = np.round(np.trapz(sig_l, x = height_l)/
-                              (np.trapz(sig, x = height)), decimals = 5)         
+            wgh[i] = np.round(trapezoid(sig_l, x = height_l)/
+                              (trapezoid(sig, x = height)), decimals = 5)         
             
             mask_max = (sig_l == np.nanmax(sig_l))
 
