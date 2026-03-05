@@ -163,7 +163,7 @@ def collect_ltool_settings(argv=None):
             "  • input_path, if input_path is a directory\n"
             "  • parent directory of input_path, if input_path is a file"
             "If enable_output_timestamp is enabled, a subfolder named "
-            "ltool_<timestamp> will be created each time ltool is called."
+            "<timestamp> will be created each time ltool is called."
             "The output files will be placed inside"
         )
     )

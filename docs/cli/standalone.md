@@ -76,15 +76,22 @@ If the folder contains multiple files, the can be filtered with the following op
 
 ### Output controls
 
+- `--enable_output_timestamp``  
+  If enabled, the output files will be saved in a subfolder inside the provided output folder named as <timestamp>, 
+  where timestamp is the folder creation time "in yyyymmhh_hhmmss format
+  
 - `--output_folder` *(optional)*  
   Output root folder resolution rules:
-  - If omitted: defaults to `<base_dir>/../output_<timestamp>`
-  - If relative: resolved relative to `<base_dir>/<output_folder>/output_<timestamp>`
-  - If absolute: `<output_folder>/output_<timestamp>`
+  - If omitted: defaults to `<base_dir>/..`
+  - If relative: resolved relative to `<current_working_directory>/<output_folder>`
+  - If absolute: `<output_folder>`
 
   Where `base_dir` is:
   - `input_path`, if `input_path` is a directory
   - parent directory of `input_path`, if `input_path` is a file
+  
+  If enable_output_timestamp is enabled, a subfolder named `<timestamp>` will be created each time ltool is called.
+  The output files and folders will be placed inside it.
 
 ### Plotting
 
