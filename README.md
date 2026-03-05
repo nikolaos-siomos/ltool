@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/ltool)](https://pypi.org/project/ltool/)
 [![Python versions](https://img.shields.io/pypi/pyversions/ltool)](https://pypi.org/project/ltool/)
 [![License](https://img.shields.io/github/license/nikolaos-siomos/ltool)](LICENSE)
-[![CI](https://github.com/nikolaos-siomos/ltool/actions/workflows/python-version-tests.yml/badge.svg)](https://github.com/nikolaos-siomos/ltool/actions)
+[![CI](https://github.com/nikolaos-siomos/ltool/actions/workflows/python-version-tests.yml/badge.svg?branch=main)](https://github.com/nikolaos-siomos/ltool/actions/workflows/python-version-tests.yml)
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://nikolaos-siomos.github.io/ltool/)
 
 **Documentation:** https://nikolaos-siomos.github.io/ltool/
