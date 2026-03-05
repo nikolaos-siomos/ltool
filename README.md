@@ -1,10 +1,10 @@
 # ltool
 
-[![PyPI](https://img.shields.io/pypi/v/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/ltool.svg?cacheSeconds=300)](https://pypi.org/project/ltool/)
-[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue?cacheSeconds=300)](https://nikolaos-siomos.github.io/ltool/)
-[![License](https://img.shields.io/github/license/nikolaos-siomos/ltool.svg)](LICENSE)
+[![PyPI version](https://img.shields.io/pypi/v/ltool)](https://pypi.org/project/ltool/)
+[![Python versions](https://img.shields.io/pypi/pyversions/ltool)](https://pypi.org/project/ltool/)
+[![License](https://img.shields.io/github/license/nikolaos-siomos/ltool)](LICENSE)
+[![CI](https://github.com/nikolaos-siomos/ltool/actions/workflows/python-version-tests.yml/badge.svg)](https://github.com/nikolaos-siomos/ltool/actions)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://nikolaos-siomos.github.io/ltool/)
 
 **Documentation:** https://nikolaos-siomos.github.io/ltool/
 
