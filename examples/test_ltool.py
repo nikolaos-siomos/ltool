@@ -33,7 +33,7 @@ if __name__ == "__main__":
     for method in methods:
         argv[3] = method
         argv[7] = os.path.join(script_dir,"output_single",method)
-        geom, obj = ltool(argv)
+        geom, obj, good, bad = ltool(argv)
     
     # Example using EARLINET DB backscatter files - no output folder
     argv = [
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     ]
    
-    geom, obj = ltool(argv)
+    geom, obj, good, bad = ltool(argv)
 
     argv = [
     # Example using SCC backscatter files - absolute output folder
