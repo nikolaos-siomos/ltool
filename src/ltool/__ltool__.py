@@ -9,7 +9,7 @@ import warnings, datetime
 from .layering_functions.geometrical_calculations import get_layer_features, \
     calculate_geometrical_properties, determine_layer_boundaries
 # from .layering_functions.checks import height_checks
-from .layering_functions.wavelet import wct_calculation, get_first_valid_height
+from .layering_functions.wavelet_fast import wct_calculation, get_first_valid_height
 from .export_layers.export_nc import export_nc
 from .export_layers.plot import plot_layers
 from .version import __version__
@@ -139,16 +139,16 @@ class get_layers():
         # Wavelet covariance transform
         if self.debug:
             print("-- Applying Wavelet Covariance Transform")
-        wct, wct_err, wct_mc = wct_calculation(
+        wct, wct_err = wct_calculation(
             height = height, 
             product = sig, 
             product_error = sig_err, 
-            alpha = alpha
+            alpha = alpha,
+            debug = debug
             )
     
         self.wct = wct
         self.wct_err = wct_err
-        self.wct_mc = wct_mc
         self.first_valid_idx = first_valid_idx
         self.first_valid_height = height[first_valid_idx]
 
@@ -161,7 +161,6 @@ class get_layers():
             sig_err = sig_err, 
             wct = wct, 
             wct_err = wct_err,
-            wct_mc = wct_mc,
             snr_factor = snr_factor
             )
 
@@ -200,7 +199,7 @@ class get_layers():
         self.stop_time = stop_time
         self.duration = duration
         self.layers = layers
-    
+            
     ###############################################################################
     # C) Exporting
     ###############################################################################
@@ -427,7 +426,6 @@ class get_layers():
                     sig_err = self.sig_err, 
                     wct = self.wct, 
                     wct_err = self.wct_err, 
-                    wct_mc = self.wct_mc, 
                     max_height = max_height,
                     max_sig = max_sig,
                     max_abs_wct = max_abs_wct,

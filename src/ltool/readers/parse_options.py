@@ -139,6 +139,10 @@ def collect_ltool_settings(argv=None):
 
     parser.add_argument('--dpi', type=int, default=100, help="Plot resultion (dpi)")
 
+    parser.add_argument('--report_file_status', action='store_true', default=False, help="Collects the filenames the paths of good files and problematic files in two separate lists")
+
+    parser.add_argument('--store_layer_object', action='store_true', default=False, help="Stores the whole layer object in a list. Very helful for debuging. It can lead to RAM issue if too many files are processed")
+
     parser.add_argument(
         '--enable_output_timestamp', action='store_true', default=False, 
         help=("If enabled, the output files will be saved in a subfolder "

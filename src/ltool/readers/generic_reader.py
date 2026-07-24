@@ -12,12 +12,90 @@ import numpy as np
 # import logging
 from pathlib import Path
 from netCDF4 import Dataset
-from datetime import datetime
 from ..export_layers import export_nc
+from datetime import datetime, timedelta
 from typing import Optional, Iterable, List, Union
 
 # logger = logging.getLogger(__name__)
 
+def parse_utc_datetime(value):
+    """Parse ISO-like UTC timestamps used in input NetCDF metadata.
+
+    Accepted examples:
+        2020-03-12T17:00:15Z
+        2020-03-12T17:00:15
+        2020-03-12T17:00:15.123Z
+        2020-03-12T17:00:15.123
+
+    Also repairs the known malformed form:
+        2020-04-09T08:47:01T
+
+    A timestamp without a trailing ``Z`` is treated as UTC, matching the
+    existing metadata convention. Leap-second values ending in ``:60`` or
+    ``:60Z`` are normalized to the first instant of the following minute.
+    """
+    if isinstance(value, bytes):
+        value = value.decode("utf-8")
+
+    if not isinstance(value, str):
+        raise TypeError(
+            f"Datetime metadata must be str or bytes, "
+            f"got {type(value).__name__}"
+        )
+
+    value = value.strip()
+
+    if not value:
+        raise ValueError("Datetime metadata is empty")
+
+    # Repair a known metadata defect: an extra trailing "T" after the seconds.
+    # Example: "2020-04-09T08:47:01T"
+    if value.endswith("T") and value.count("T") == 2:
+        print(
+            f"-- Warning: removing unexpected trailing 'T' "
+            f"from datetime metadata {value!r}"
+        )
+        value = value[:-1]
+
+    formats = (
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S.%fZ",
+        "%Y-%m-%dT%H:%M:%S.%f",
+    )
+
+    for fmt in formats:
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            pass
+
+    # Python datetime does not accept second=60.
+    # Parse second=59, then add one second.
+    has_z = value.endswith("Z")
+    core = value[:-1] if has_z else value
+
+    if core.endswith(":60"):
+        normalized = core[:-3] + ":59"
+
+        if has_z:
+            normalized += "Z"
+            fmt = "%Y-%m-%dT%H:%M:%SZ"
+        else:
+            fmt = "%Y-%m-%dT%H:%M:%S"
+
+        return (
+            datetime.strptime(normalized, fmt)
+            + timedelta(seconds=1)
+        )
+
+    raise ValueError(
+        f"Unsupported datetime format: {value!r}. Expected "
+        "YYYY-MM-DDTHH:MM:SS with optional fractional seconds "
+        "and optional Z."
+    )
+        
+        
 def list_input_netcdf_files(
     input_path: Union[str, Path],
     wavelength: Optional[str],
@@ -86,6 +164,14 @@ def read_product_file(file_path):
 
     fh = Dataset(file_path, mode='r')
 
+    # File checks
+    missing_vars = check_missing_variables(fh)
+    missing_metas = check_missing_metadata(fh)
+    
+    if missing_vars or missing_metas:
+        fh.close()
+        return None, None, True
+
     # Metadata
     original_metadata = fh.__dict__
     
@@ -105,17 +191,21 @@ def read_product_file(file_path):
     metadata['title'] = 'Geometrical properties of aerosol layers'
     metadata['input_file'] = os.path.basename(file_path)    
     metadata['wavelength'] = str(int(fh.variables['wavelength'][0].data))
-    metadata['backscatter_calibration_height'] = (fh.variables['backscatter_calibration_range'][0,1] + fh.variables['backscatter_calibration_range'][0,0])/2.    
     # metadata['height_units'] = 'm_asl'
     
-    metadata['latitude'] = np.round(np.ma.filled(fh.variables['latitude'][:], fill_value=np.nan).item(), decimals = 4)
-    metadata['longitude'] = np.round(np.ma.filled(fh.variables['longitude'][:], fill_value=np.nan).item(), decimals = 4)
-    metadata['station_altitude'] = np.round(np.ma.filled(fh.variables['station_altitude'][:]).item(), decimals = 5)
+    # metadata['latitude'] = np.round(np.ma.filled(fh.variables['latitude'][:], fill_value=np.nan).item(), decimals = 4)
+    # metadata['longitude'] = np.round(np.ma.filled(fh.variables['longitude'][:], fill_value=np.nan).item(), decimals = 4)
+    # metadata['station_altitude'] = np.round(np.ma.filled(fh.variables['station_altitude'][:]).item(), decimals = 5)
     
     # Dates
-    metadata['start_time'] = datetime.strptime(metadata['measurement_start_datetime'], '%Y-%m-%dT%H:%M:%SZ').strftime('%Y%m%d%H%M')
-    metadata['stop_time'] = datetime.strptime(metadata['measurement_stop_datetime'], '%Y-%m-%dT%H:%M:%SZ').strftime('%Y%m%d%H%M')
-    
+    metadata['start_time'] = parse_utc_datetime(
+        metadata['measurement_start_datetime']
+        ).strftime('%Y%m%d%H%M')
+
+    metadata['stop_time'] = parse_utc_datetime(
+        metadata['measurement_stop_datetime']
+        ).strftime('%Y%m%d%H%M')
+
     # Profiles
     profiles = {}
 
@@ -136,14 +226,73 @@ def read_product_file(file_path):
     alt = alt[s_ind:e_ind+1]
     prod = prod[s_ind:e_ind+1]
     prod_err = prod_err[s_ind:e_ind+1]
-    
-    # Interpolate to make sure 
+
+    # Store arrays in dictionary
     profiles['height'] = alt
     profiles['product'] = prod
     profiles['product_error'] = prod_err
     
-    return(metadata, profiles)
+    # Check if the arrays are too short
+    bad_profile = check_arrays(profiles)
+    
+    # Close the netcdf
+    fh.close()
+    
+    return metadata, profiles, bad_profile
 
+# def check_arrays(profiles):
+    
+#     alt = profiles['height']
+#     prod = profiles['product']
+#     prod_err = profiles['product_error']
+    
+#     bad_profile = False
+    
+#     if (len(prod[prod == prod]) <= 10) or (len(alt[prod > 0.]) <= 10) \
+#         or (len(alt[prod_err > 0.]) <= 10):
+        
+#         bad_profile = True
+    
+#     return(bad_profile)
+
+def check_missing_variables(fh):
+    required_keys = [
+        'altitude', 
+        'backscatter', 
+        'error_backscatter',
+        'wavelength',
+        # 'measurement_start_datetime',
+        # 'measurement_stop_datetime'
+        ]
+
+    # Check if any variables are missing in the netcdf files
+    missing = [key for key in required_keys if key not in fh.variables]
+
+    if missing:
+        print(f"Missing variables: {missing}")
+        return True
+    else:
+        print("All variables are present")
+        return False
+
+def check_missing_metadata(fh):
+    required_keys = [
+        'measurement_start_datetime',
+        'measurement_stop_datetime'
+        ]
+
+    # Check if any variables are missing in the netcdf files
+    missing = [key for key in required_keys if key not in fh.__dict__]
+
+    if missing:
+        print(f"Missing metadata: {missing}")
+        return True
+    else:
+        print("All metadata are present")
+        return False
+    
+    
+    
 def check_arrays(profiles):
     
     alt = profiles['height']
@@ -152,12 +301,49 @@ def check_arrays(profiles):
     
     bad_profile = False
     
-    if (len(prod[prod == prod]) <= 10) or (len(alt[prod > 0.]) <= 10) \
-        or (len(alt[prod_err > 0.]) <= 10):
+    # Check array length
+    if (len(prod[~np.isnan(prod)]) <= 10) or \
+       (len(alt[prod > 0.]) <= 10) or \
+       (len(alt[prod_err > 0.]) <= 10):
         
         bad_profile = True
-    
-    return(bad_profile)
+        print("-- Warning: Arrays too short! Skipping file")
+        
+    # Check negative values
+    if (alt < 0.).any():
+        
+        bad_profile = True
+        
+        print("-- Warning: Negative altitude values detected! Skipping file")
+
+    if (prod_err <= 0.).any():
+        
+        bad_profile = True
+        
+        print("-- Warning: Negative error values detected! Skipping file")
+
+    if np.any(~np.isfinite(alt)):
+
+        bad_profile = True
+        
+        print("-- Warning: Height contains non-finite values! Skipping file")
+
+    if np.any(np.diff(alt) <= 0):
+
+        bad_profile = True
+        
+        print("-- Warning: Height should be strictly increasing! Skipping file")
+
+    # # ✅ New: check for constant height step
+    # if len(alt) > 1:
+    #     steps = np.diff(alt)
+    #     first_step = steps[0]
+        
+    #     if not np.allclose(steps, first_step, atol=1e-5):
+    #         print("-- Warning: Irregular height grid detected")
+    #         bad_profile = True
+
+    return bad_profile
 
 def trim_arrays(profiles, backscatter_calibration_height):
     

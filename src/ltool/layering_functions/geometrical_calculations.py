@@ -69,7 +69,7 @@ def persistent_peaks_tolerant(
     return persistent_idx, counts
 
 def get_layer_features(height, sig, sig_err, 
-                       wct, wct_err, wct_mc, snr_factor):
+                       wct, wct_err, snr_factor):
     
     # Make the error positive to be on the safe side....
     sig_err = np.abs(sig_err)
@@ -83,11 +83,6 @@ def get_layer_features(height, sig, sig_err,
     # Index of potential features
     b_index = find_peaks(wct)[0]
     t_index = find_peaks(-wct)[0]
-    
-    # b_index, _ = \
-    #     persistent_peaks_tolerant(wct_mc, k=5, fraction = 0.95)
-    # t_index,  _ = \
-    #     persistent_peaks_tolerant(-wct_mc, k=5, fraction = 0.95)
     
     # Add indexes of end points
     valid_ind = np.where(wct == wct)[0]
@@ -333,7 +328,7 @@ def calculate_geometrical_properties(layer_features, height, sig):
                                 dims = ['layers','features'],
                                 name = 'geometrical_properties')
         
-    return(geom)
+    return geom
 
 def concatenate_layer_features(bases, tops):
     
