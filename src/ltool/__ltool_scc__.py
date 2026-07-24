@@ -122,7 +122,7 @@ def main(args=None):
             dt_start, alt, prod, prod_err, metadata, wave, rh = \
                 read_scc_db(path = files[i])
                 
-            metadata, profiles = read_product_file(files[i])
+            metadata, profiles, bad_file = read_product_file(files[i])
                         
         except Exception as e:
             logger.exception("Error while reading the SCC input file ")

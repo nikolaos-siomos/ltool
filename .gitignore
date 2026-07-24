@@ -1,4 +1,4 @@
-# Python bytecode
+# Python bytecode and interpreter caches
 __pycache__/
 *.py[cod]
 *$py.class
@@ -9,7 +9,7 @@ venv/
 ENV/
 env/
 
-# Packaging / build artifacts
+# Packaging and build artifacts
 build/
 dist/
 *.egg-info/
@@ -18,25 +18,45 @@ dist/
 pip-wheel-metadata/
 .wheels/
 
-# Testing / coverage
+# Test, coverage, and static-analysis caches
 .pytest_cache/
 .coverage
 .coverage.*
+coverage.xml
 htmlcov/
 .tox/
 .nox/
 .mypy_cache/
 .pyright/
+.ruff_cache/
 ruff_cache/
+.hypothesis/
 
-# Docs build output (MkDocs)
+# Documentation build output
 site/
 
-# OS / editor
+# Generated ltool example outputs
+/examples/output/
+/examples/output_single/
+/examples/sample_files/output/
+
+# Runtime logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+.cache/
+tmp/
+temp/
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+.ipython/
+
+# OS and editor metadata
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# Generated plots
-examples/**/*.png

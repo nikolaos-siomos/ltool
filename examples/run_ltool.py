@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     ]
    
-    geom, obj = ltool(argv)
+    geom, obj, good, bad = ltool(argv)
 
     argv = [
     # Example using SCC backscatter files
@@ -44,4 +44,4 @@ if __name__ == "__main__":
         "--output_folder",
         "<path_to_output>",
         ]
-    geom, obj = ltool(argv)
+    geom, obj, good, bad = ltool(argv)
