@@ -67,4 +67,4 @@ if __name__ == "__main__":
         os.path.join(script_dir,"output"),
         ]
     
-    geom, obj = ltool(argv)
+    geom, obj, good, bad = ltool(argv)
