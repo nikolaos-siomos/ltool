@@ -193,9 +193,12 @@ def read_product_file(file_path):
     metadata['wavelength'] = str(int(fh.variables['wavelength'][0].data))
     # metadata['height_units'] = 'm_asl'
     
-    # metadata['latitude'] = np.round(np.ma.filled(fh.variables['latitude'][:], fill_value=np.nan).item(), decimals = 4)
-    # metadata['longitude'] = np.round(np.ma.filled(fh.variables['longitude'][:], fill_value=np.nan).item(), decimals = 4)
-    # metadata['station_altitude'] = np.round(np.ma.filled(fh.variables['station_altitude'][:]).item(), decimals = 5)
+    if 'latitude' in fh.variables:
+        metadata['latitude'] = np.round(np.ma.filled(fh.variables['latitude'][:], fill_value=np.nan).item(), decimals = 4)
+    if 'longitude' in fh.variables:
+        metadata['longitude'] = np.round(np.ma.filled(fh.variables['longitude'][:], fill_value=np.nan).item(), decimals = 4)
+    if 'station_altitude' in fh.variables:
+        metadata['station_altitude'] = np.round(np.ma.filled(fh.variables['station_altitude'][:]).item(), decimals = 5)
     
     # Dates
     metadata['start_time'] = parse_utc_datetime(

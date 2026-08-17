@@ -21,25 +21,22 @@ def export_nc(layers, alpha, wavelength, snr_factor, wct_peak_margin, version,
     geom_dts = layers.to_dataset('features')
     geom_dts = geom_dts.drop_vars('layers')
     
-    encoding = {}
-    for v in geom_dts.data_vars:
-        if np.issubdtype(geom_dts[v].dtype, np.floating):
-            encoding[v] = {"_FillValue": None}   # or np.nan if you prefer
-    
     time = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
     if metadata:
         geom_dts.attrs = metadata
         
-        argv = sys.argv
-        argv[-1] = os.path.basename(argv[-1])
-        args = ' '.join(argv[1:])
-        geom_dts.attrs['history'] = f"{geom_dts.attrs['history']}; {time}: ltool {args}" 
+        if 'history' in geom_dts.attrs:
+            argv = sys.argv
+            argv[-1] = os.path.basename(argv[-1])
+            args = ' '.join(argv[1:])
+            geom_dts.attrs['history'] = f"{geom_dts.attrs['history']}; {time}: ltool {args}"
 
-        ssc_vd = geom_dts.attrs['scc_version_description']
-        parts = ssc_vd.split(')')
-        ssc_vd = f'{parts[0]}, LTOOL vers. {version}){parts[-1]}'
-        geom_dts.attrs['scc_version_description'] = ssc_vd
+        if 'scc_version_description' in geom_dts.attrs:
+            ssc_vd = geom_dts.attrs['scc_version_description']
+            parts = ssc_vd.split(')')
+            ssc_vd = f'{parts[0]}, LTOOL vers. {version}){parts[-1]}'
+            geom_dts.attrs['scc_version_description'] = ssc_vd
         
     geom_dts.attrs['processor_name'] = 'ltool'
     geom_dts.attrs['processor_version'] = version
@@ -60,9 +57,25 @@ def export_nc(layers, alpha, wavelength, snr_factor, wct_peak_margin, version,
     geom_dts.dilation.attrs['long_name'] = 'The dilation value (window) used for the WCT calculations.'
     geom_dts.dilation.attrs['units'] = 'm'
    
-    geom_dts['wavelength'] = float(wavelength)
+    geom_dts['wavelength'] = np.nan if wavelength is None else float(wavelength)
     geom_dts.wavelength.attrs['long_name'] = 'The wavelength of the ELDA product used to obtain the geometrical properties'
     geom_dts.wavelength.attrs['units'] = 'nm'
+
+    if metadata:
+        if metadata.get('latitude') is not None:
+            geom_dts['latitude'] = float(metadata['latitude'])
+            geom_dts.latitude.attrs['long_name'] = 'latitude of station'
+            geom_dts.latitude.attrs['units'] = 'degrees_north'
+
+        if metadata.get('longitude') is not None:
+            geom_dts['longitude'] = float(metadata['longitude'])
+            geom_dts.longitude.attrs['long_name'] = 'longitude of station'
+            geom_dts.longitude.attrs['units'] = 'degrees_east'
+
+        if metadata.get('station_altitude') is not None:
+            geom_dts['station_altitude'] = float(metadata['station_altitude'])
+            geom_dts.station_altitude.attrs['long_name'] = 'station altitude above see level'
+            geom_dts.station_altitude.attrs['units'] = 'm'
 
     geom_dts['residual_layer_flag'] = geom_dts['residual_layer_flag'].astype('int32')
     geom_dts.residual_layer_flag.attrs['values'] = '0 for normal layers, 1 for the residual layer'
@@ -105,6 +118,11 @@ def export_nc(layers, alpha, wavelength, snr_factor, wct_peak_margin, version,
     geom_dts.weight.attrs['long_name'] = 'Fraction of the integrated backscatter within the layer to the whole columnar integral'
     geom_dts.weight.attrs['units'] = ''
     
+    encoding = {}
+    for v in geom_dts.data_vars:
+        if np.issubdtype(geom_dts[v].dtype, np.floating):
+            encoding[v] = {"_FillValue": geom_dts[v].dtype.type(9.96921e36)}
+
     if dir_out and save_netcdf:
         if subfolder in [None, '']:
             sdir_out = dir_out
